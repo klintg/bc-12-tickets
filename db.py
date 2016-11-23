@@ -8,13 +8,13 @@ class Database:
         self.cursor = self.conn.cursor()
         df = "valid"
         self.cursor.execute('''CREATE TABLE IF NOT EXISTS events(event_id integer PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, venue TEXT NOT NULL, start TEXT NOT NULL, end TEXT NOT NULL);''')
-        self.cursor.execute('''CREATE TABLE IF NOT EXISTS tickets(ticket_id integer PRIMARY KEY AUTOINCREMENT,valid TEXT NOT NULL, name TEXT NOT NULL, email TEXT NOT NULL, ticket_event_id integer NOT NULL, FOREIGN KEY(ticket_event_id) REFERENCES events(event_id) ON DELETE CASCADE)''')
+        self.cursor.execute('''CREATE TABLE IF NOT EXISTS tickets(ticket_id integer PRIMARY KEY AUTOINCREMENT,valid TEXT NOT NULL, email TEXT NOT NULL, ticket_event_id integer NOT NULL, FOREIGN KEY(ticket_event_id) REFERENCES events(event_id) ON DELETE CASCADE)''')
 
     # creating a new event 
     def new_event(self, name, venue, start, end):
 
         with self.conn:
-             self.cursor.execute("INSERT INTO events(name, venue, start, end) VALUES ('%s', '%s', '%s', '%s')" % (name, venue, start, end))
+             self.cursor.execute("INSERT INTO events(name, venue, start, end) VALUES ('%s', '%s', '%s', '%s')" % (name, venue, datetime.strptime(start, '%d/%m/%Y'), datetime.strptime(end, '%d/%m/%Y')))
              self.conn.commit()
     
     # deleting an event 
@@ -31,13 +31,13 @@ class Database:
 
     # updating the data.
     def edit_data(self, event_id, name, venue, start, end):    
-        self.cursor.execute("UPDATE events SET name = '%s', venue = '%s', start ='%s', end = '%s' WHERE event_id = %s" % (name, venue, datetime.strptime(start, '%d/%m/%Y %H:%M'), datetime.strptime(end, '%d/%m/%Y %H:%M'), event_id))
+        self.cursor.execute("UPDATE events SET name = '%s', venue = '%s', start ='%s', end = '%s' WHERE event_id = %s" % (name, venue, datetime.strptime(start, '%d/%m/%Y'), datetime.strptime(end, '%d/%m/%Y'), event_id))
         self.conn.commit()
     
     # creating tickets
-    def create_tickets(self, fullname, email, event_id):
+    def create_tickets(self, valid, email, event_id):
         with self.conn:
-             self.cursor.execute("INSERT INTO tickets(valid, name, email, ticket_event_id) VALUES ('valid', '%s', '%s', '%s')" % (fullname, email, event_id))
+             self.cursor.execute("INSERT INTO tickets(valid, email, ticket_event_id) VALUES ('%s', '%s', '%s')" % (valid, email, event_id))
              self.conn.commit()
 
     # fetching tickets of a particular event 
@@ -48,8 +48,9 @@ class Database:
             print('{}, {}, {}, {}'.format(row[0], row[1], row[2], row[3]))
 
     # invalidating a ticket.
-    def invalidate(self, tickid):
-        self.cursor.execute("UPDATE tickets SET valid = '%s' WHERE ticket_id = '%s'" % ("invalid", tickid))
-        print("got this")
+    def invalidate(self, valid, tickid):
+        self.cursor.execute("UPDATE tickets set valid = '%s' WHERE ticket_id = '%s'" % (valid, tickid))
+        self.cursor.execute("SELECT * FROM tickets WHERE ticket_id = '%s'" % (tickid))        
         for row in self.cursor.fetchall():
-            print('{}, {}, {}, {}, {}'.format(row[0], row[1], row[2], row[3], row[4]))
+            print('{}, {}, {}, {}'.format(row[0], row[1], row[2], row[3]))
+        
