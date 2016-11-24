@@ -27,32 +27,37 @@ def starter():
     click.secho('' * 75)
     click.secho('' * 75)
 
+    menu_table()
+
+def intro():
+    click.secho(
+        """
+
+    +++++++++++++++++++++++++++EVENTWISER+++++++++++++++++++++++++++++++++++
+    eventwiser app is a console app that can be used to create events,
+    delete events, list events, edit events and generate tickets for events
+
+    ------------------------------------------------------------------------ 
+
+                    You can always type help to get assistance
+
+    ***************************WELCOME**************************************
+
+        """, bold=True, fg='green')
+
 
 def menu_table():
     time.sleep(2)
-    table = [[],
-             [],
-             [],
-             [],
-             [],
-             []]
+    table = [["event_create", "create an event"],
+             ["event_delete", "deletes an event from the id you provide"],
+             ["event_list", "lists all events"],
+             ["edit", "edits an event"],
+             ["ticket_generate", "generates a ticket"],
+             ["quit", "exiting the application"]]
 
-    headers = ["", "", "", ""]
+    headers = ["COMMANDS","DESCRIPTION"]
     click.secho(tabulate(table, headers, tablefmt="grid"),
-                fg='blue', bold=True)
-    time.sleep(8)
+                fg='green', bold=True)
+    time.sleep(15)
     click.clear()
     introduction()
-
-
-def help():
-    click.clear()
-    click.secho('~' * 50, fg='yellow')
-    click.secho('~' * 50, fg='yellow')
-    click.secho('EVENTWISE.', bold=True, fg='yellow')
-    click.secho('Definition of terms.', fg='blue', bold=True)
-    def_terms = """
-    """
-    click.secho(def_terms, fg='yellow')
-    click.secho('~' * 50, fg='yellow')
-    click.secho('~' * 50, fg='yellow')
