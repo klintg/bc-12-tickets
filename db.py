@@ -20,7 +20,7 @@ class Database:
     def new_event(self, name, venue, start, end):
 
         with self.conn:
-             self.cursor.execute("INSERT INTO events(name, venue, start, end) VALUES ('%s', '%s', '%s', '%s')" % (name, venue, datetime.strptime(start, '%d-%m-%Y'), datetime.strptime(end, '%d-%m-%Y')))
+             self.cursor.execute("INSERT INTO events(name, venue, start, end) VALUES ('%s', '%s', '%s', '%s')" % (name, venue, datetime.strptime(start, '%d/%m/%Y'), datetime.strptime(end, '%d/%m/%Y')))
              self.conn.commit()
     
     # deleting an event 
@@ -41,8 +41,9 @@ class Database:
 
     # updating the data.
     def edit_data(self, event_id, name, venue, start, end):    
-        self.cursor.execute("UPDATE events SET name = '%s', venue = '%s', start ='%s', end = '%s' WHERE event_id = %s" % (name, venue, datetime.strptime(start, '%d-%m-%Y'), datetime.strptime(end, '%d-%m-%Y'), event_id))
+        self.cursor.execute("UPDATE events SET name = '%s', venue = '%s', start ='%s', end = '%s' WHERE event_id = %s" % (name, venue, datetime.strptime(start, '%d/%m/%Y'), datetime.strptime(end, '%d/%m/%Y'), event_id))
         self.conn.commit()
+ 
     
     # creating tickets
     def create_tickets(self, valid, email, event_id):
