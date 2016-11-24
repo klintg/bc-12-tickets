@@ -10,7 +10,6 @@ class Database:
         self.conn = sqlite3.connect('EventsTicker.db')
         self.conn.execute('pragma foreign_keys = on')
         self.cursor = self.conn.cursor()
-        df = "valid"
         self.cursor.execute('''CREATE TABLE IF NOT EXISTS events(event_id integer PRIMARY KEY AUTOINCREMENT, \
                 name TEXT NOT NULL, venue TEXT NOT NULL, start TEXT NOT NULL, end TEXT NOT NULL);''')
         
@@ -21,7 +20,7 @@ class Database:
     def new_event(self, name, venue, start, end):
 
         with self.conn:
-             self.cursor.execute("INSERT INTO events(name, venue, start, end) VALUES ('%s', '%s', '%s', '%s')" % (name, venue, datetime.strptime(start, '%d/%m/%Y'), datetime.strptime(end, '%d/%m/%Y')))
+             self.cursor.execute("INSERT INTO events(name, venue, start, end) VALUES ('%s', '%s', '%s', '%s')" % (name, venue, datetime.strptime(start, '%d-%m-%Y'), datetime.strptime(end, '%d-%m-%Y')))
              self.conn.commit()
     
     # deleting an event 
@@ -42,7 +41,7 @@ class Database:
 
     # updating the data.
     def edit_data(self, event_id, name, venue, start, end):    
-        self.cursor.execute("UPDATE events SET name = '%s', venue = '%s', start ='%s', end = '%s' WHERE event_id = %s" % (name, venue, datetime.strptime(start, '%d/%m/%Y'), datetime.strptime(end, '%d/%m/%Y'), event_id))
+        self.cursor.execute("UPDATE events SET name = '%s', venue = '%s', start ='%s', end = '%s' WHERE event_id = %s" % (name, venue, datetime.strptime(start, '%d-%m-%Y'), datetime.strptime(end, '%d-%m-%Y'), event_id))
         self.conn.commit()
     
     # creating tickets
@@ -71,7 +70,18 @@ class Database:
         for row in email_ticket:
             print('{}, {}'.format(row[1], row[2]))
 
+    # quering the last ticket to send to the email 
+    def get_last_ticket(self, *args):
+        x = PrettyTable()
+        x.fields_names = ["Ticketid", "Valid", "Email", "Ticket_EventID"]
 
+        self.cursor.execute("SELECT * FROM tickets ORDER BY ticket_id DESC LIMIT 1")
+        last = self.cursor.fetchall()
+        for row in last:
+            x.add_row([row[0], row[1], row[2], row[3]])
+        print(x)
+
+    
 
     # invalidating a ticket.
     def invalidate(self, valid, tickid):
