@@ -1,6 +1,9 @@
 import sqlite3
 from datetime import datetime 
 import click
+from prettytable import PrettyTable 
+from termcolor import cprint
+import tabulate 
 
 class Database:
     def __init__(self):
@@ -28,10 +31,14 @@ class Database:
     
     # fetching all events from the database
     def read_all_events(self, *args):
+        x = PrettyTable()
+        x.field_names = ["EventID", "Name", "Venue", "Start", "End"]
+
         self.cursor.execute("SELECT * FROM events")
         all =  self.cursor.fetchall()
         for row in all:
-            print('{}, {}, {}, {}, {}'.format(row[0], row[1], row[2], row[3], row[4]))
+            x.add_row([row[0], row[1], row[2], row[3], row[4]])
+        print(x)
 
     # updating the data.
     def edit_data(self, event_id, name, venue, start, end):    
@@ -44,23 +51,32 @@ class Database:
              self.cursor.execute("INSERT INTO tickets(valid, email, ticket_event_id) VALUES ('%s', '%s', '%s')" % (valid, email, event_id))
              self.conn.commit()
 
+
     # fetching tickets of a particular event 
     def get_event_tickets(self, eventid):
+        x = PrettyTable()
+        x.field_names = ["Ticketid", "Valid", "Email", "Ticket_EventID"]
+
         self.cursor.execute("SELECT * FROM tickets WHERE ticket_event_id = (%d)" %(eventid))
         all_tickets = self.cursor.fetchall()
         for row in all_tickets:
-            print('{}, {}, {}, {}'.format(row[0], row[1], row[2], row[3]))
-    
+            x.add_row([row[0], row[1], row[2], row[3]])
+        print(x)
+
+
     def get_ticket(self, event_id):
+        
         self.cursor.execute("SELECT * FROM events WHERE event_id = %d" % (event_id))
         email_ticket = self.cursor.fetchone()
         for row in email_ticket:
             print('{}, {}'.format(row[1], row[2]))
+
+
 
     # invalidating a ticket.
     def invalidate(self, valid, tickid):
         self.cursor.execute("UPDATE tickets set valid = '%s' WHERE ticket_id = '%s'" % (valid, tickid))
         self.cursor.execute("SELECT * FROM tickets WHERE ticket_id = '%s'" % (tickid))        
         for row in self.cursor.fetchall():
-            print('{}, {}, {}, {}'.format(row[0], row[1], row[2], row[3]))
+            click.echo('{}, {}, {}, {}'.format(row[0], row[1], row[2], row[3]))
         
