@@ -5,7 +5,7 @@ interactive command application.
 
 Usage:
     tickets event_create <name> <start> <end> <venue>
-    tickets event_delete <id>
+    tickets event_delete  
     tickets event_list
     tickets edit <even_id> <new_name> <new_venue> <new_start> <new_end>
     tickets ticket_generate [<email>] <event_id>
@@ -25,17 +25,15 @@ Options:
 import cmd 
 from db import Database
 from docopt import docopt, DocoptExit
-# import sendemail.py
+from sendemail import send_email
 import ui 
 import click 
-# from tabulate import tabulate 
 
 ui.introduction()
 ui.starter()
 
 
 # docopt decorator 
-
 def docopt_cmd(func):    
     def fn(self, arg):
         try:
@@ -77,14 +75,19 @@ class EventsTick(cmd.Cmd):
     def do_event_create(self, args):
         """Usage: event_create <name> <venue> <start> <end> """
         data.new_event(args['<name>'], args['<venue>'], args['<start>'], args['<end>'])
-
+        
     
     # deleting an event
     @docopt_cmd
     def do_event_delete(self, event_id):
         """Usage: event_delete <id>"""
-        
-        data.getrid(int(event_id['<id>']))
+
+        try:
+            data.getrid(int(event_id['<id>']))
+        except:
+            print(colored("Please insert an integer", "red"))
+
+
 
 
     # listing all events
@@ -103,8 +106,7 @@ class EventsTick(cmd.Cmd):
         data.edit_data(args['<new_name>'], args['<new_venue>'], args['<new_start>'], args['<new_end>'], int(args['<eventid>']),)
 
 
-    # sending tickets despite email input in ticket_generate
-    
+    # sending tickets despite email input in ticket_generate    
     def do_ticket_send(self, *args):        
         # this should query for email and send the generated list.append
         print("Please provide the email")
@@ -144,8 +146,10 @@ class EventsTick(cmd.Cmd):
         # print(arg)
         data.invalidate(valid, int(arg['<ticket_id>']))
     
+
+    # exiting the app
     @docopt_cmd
-    def do_quit(self, args):
+    def do_exit(self, args):
         """Usage: quit"""
         exit()
 
