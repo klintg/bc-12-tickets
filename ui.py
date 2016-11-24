@@ -58,6 +58,6 @@ def menu_table():
     headers = ["COMMANDS","DESCRIPTION"]
     click.secho(tabulate(table, headers, tablefmt="grid"),
                 fg='green', bold=True)
-    time.sleep(15)
+    time.sleep(10)
     click.clear()
     introduction()
