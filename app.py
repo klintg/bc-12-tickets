@@ -8,7 +8,8 @@ Usage:
     tickets event_delete <id>
     tickets event_list
     tickets edit <even_id> <new_name> <new_venue> <new_start> <new_end>
-    tickets generate_ticket <fullname> <email> <event_id>
+    tickets ticket_generate [<email>] <event_id>
+    tickets quit
 
 
     tickets (-i | --interactive)
@@ -24,6 +25,13 @@ Options:
 import cmd 
 from db import Database
 from docopt import docopt, DocoptExit
+# import sendemail.py
+import ui 
+import click 
+# from tabulate import tabulate 
+
+ui.introduction()
+ui.starter()
 
 
 # docopt decorator 
@@ -37,7 +45,7 @@ def docopt_cmd(func):
             # The DocoptExit is thrown when the args do not match.
             # We print a message to the user and the usage block.
 
-            print('Invalid Command!')
+            print('This is how to run the command')
             print(e)
             return
 
@@ -58,19 +66,17 @@ def docopt_cmd(func):
 #  database call
 data = Database()
 
-
-
 class EventsTick(cmd.Cmd):
-    intro = "Book a ticket!"
-    prompt = 'tickets>>'
+    intro = "Create an event! Generate a ticket!"
+    prompt = click.style("tickets>>", fg='green', bg='black', bold=True)
 
     
 
     # creating an event
     @docopt_cmd
     def do_event_create(self, args):
-        """Usage: event_create <name> <start> <end> <venue>"""
-        data.new_event(args['<name>'], args['<start>'], args['<end>'], args['<venue>'])
+        """Usage: event_create <name> <venue> <start> <end> """
+        data.new_event(args['<name>'], args['<venue>'], args['<start>'], args['<end>'])
 
     
     # deleting an event
@@ -91,54 +97,57 @@ class EventsTick(cmd.Cmd):
 
     # editing an events
     @docopt_cmd
-    def do_edit(self, *args):
+    def do_edit(self, args):
         """Usage: edit <eventid> <new_name> <new_venue> <new_start> <new_end>"""
-        # print(args)
-        data.edit_data(int(eventid['<eventid>']), new_name['<new_name>'], new_venue['<new_venue>'], new_start_date['<new_start>'], new_end_date['<new_end>'])
+        
+        data.edit_data(args['<new_name>'], args['<new_venue>'], args['<new_start>'], args['<new_end>'], int(args['<eventid>']),)
 
 
-    # sending tickets
-    # @docopt_cmd
+    # sending tickets despite email input in ticket_generate
+    
     def do_ticket_send(self, *args):        
-        email = input("Please input your email")
-        print(email)
+        # this should query for email and send the generated list.append
+        print("Please provide the email")
 
+
+
+    # generating ticket 
     def do_ticket_generate(self, *args):
-        """Usage: generate_ticket <fullname> <email> <event_id> """
-
-        # fullname = input("Please Enter your full names: ")
-        # email = input("Please Enter your Email: ")
-        # event_id = int(input("Please Enter the Event_ID you would like to attend: "))
-        print(args)
-
-        # data = Database()
-        # data.create_tickets(fullname, email, event_id)
         
-        # if email == "":
-        #     return self.do_ticket_send()
+        email = input("Enter your email: ")
+        event_id = int(input("Enter the event: "))
         
-        # else:
-        #     server = smtplib.SMTP('smtp.gmail.com', 587)
-        #     server.starttls()
-        #     server.login("clyntonn3@gmail.com", "themilgo36624")
+        valid = True 
+        data.create_tickets(valid, email, event_id)
 
-        #     msg = "Looks like you will be attending "
-        #     server.sendmail("clyntonn3@gmail.com", email, msg)
-        #     server.quit()
+        # if there is no email i run ticket_send.
+        if email == "":
+            return self.do_ticket_send()        
+        else: 
+            send_email(email, event_id)
+
+
 
 
     # user can input an event id and all the tickets for that event will be shown.
-    def do_event_view(self, *args):
+    @docopt_cmd
+    def do_event_view(self, arg):
         """Usage: event_view <event_id>"""
-
-        data.get_event_tickets(int(event_id['<event_id>']))
+        
+        data.get_event_tickets(int(arg['<event_id>']))
     
 
-    def do_ticket_invalidate(self, tick_id):
+    @docopt_cmd
+    def do_ticket_invalidate(self, arg):
         """Usage: ticket_invalidate <ticket_id>"""
-        
-        data.invalidate(int(tick_id))
-
+        valid = False
+        # print(arg)
+        data.invalidate(valid, int(arg['<ticket_id>']))
+    
+    @docopt_cmd
+    def do_quit(self, args):
+        """Usage: quit"""
+        exit()
 
 
 if __name__ == '__main__':

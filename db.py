@@ -1,5 +1,6 @@
 import sqlite3
 from datetime import datetime 
+import click
 
 class Database:
     def __init__(self):
@@ -7,8 +8,11 @@ class Database:
         self.conn.execute('pragma foreign_keys = on')
         self.cursor = self.conn.cursor()
         df = "valid"
-        self.cursor.execute('''CREATE TABLE IF NOT EXISTS events(event_id integer PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, venue TEXT NOT NULL, start TEXT NOT NULL, end TEXT NOT NULL);''')
-        self.cursor.execute('''CREATE TABLE IF NOT EXISTS tickets(ticket_id integer PRIMARY KEY AUTOINCREMENT,valid TEXT NOT NULL, email TEXT NOT NULL, ticket_event_id integer NOT NULL, FOREIGN KEY(ticket_event_id) REFERENCES events(event_id) ON DELETE CASCADE)''')
+        self.cursor.execute('''CREATE TABLE IF NOT EXISTS events(event_id integer PRIMARY KEY AUTOINCREMENT, \
+                name TEXT NOT NULL, venue TEXT NOT NULL, start TEXT NOT NULL, end TEXT NOT NULL);''')
+        
+        self.cursor.execute('''CREATE TABLE IF NOT EXISTS tickets(ticket_id integer PRIMARY KEY AUTOINCREMENT, \
+                valid TEXT NOT NULL, email TEXT NOT NULL, ticket_event_id integer NOT NULL, FOREIGN KEY(ticket_event_id) REFERENCES events(event_id) ON DELETE CASCADE)''')
 
     # creating a new event 
     def new_event(self, name, venue, start, end):
@@ -46,6 +50,12 @@ class Database:
         all_tickets = self.cursor.fetchall()
         for row in all_tickets:
             print('{}, {}, {}, {}'.format(row[0], row[1], row[2], row[3]))
+    
+    def get_ticket(self, event_id):
+        self.cursor.execute("SELECT * FROM events WHERE event_id = %d" % (event_id))
+        email_ticket = self.cursor.fetchone()
+        for row in email_ticket:
+            print('{}, {}'.format(row[1], row[2]))
 
     # invalidating a ticket.
     def invalidate(self, valid, tickid):
