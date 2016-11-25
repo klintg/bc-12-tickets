@@ -26,7 +26,7 @@ To start the application by run: `python app.py`
 | event_delete      | deletes an event in the db      | 
 | edit              | edits an event                  |
 | ticket_generate   | generates a ticket              |
-| quit              | exits the application           |
+| exit              | exits the application           |
 | -h                | Docpt usage                     |
 | h                 | get the help table              |
 
