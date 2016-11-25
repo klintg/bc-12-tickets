@@ -26,8 +26,8 @@ To start the application by run: `python app.py`
 | event_delete  eventid    | deletes an event in the db      | 
 | edit                     | edits an event                  |
 | ticket_generate eventid  | generates a ticket              |
-| event_view  id           | generates a ticket              |
-| ticket_generate          | generates a ticket              |
+| event_view  eventid      | view the tickets for an event              |
+| ticket_generate          | generates a ticket             |
 | exit                     | exits the application           |
 | -h                       | Docpt usage                     |
 | h                        | get the help table              |
