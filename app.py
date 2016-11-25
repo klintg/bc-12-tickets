@@ -71,12 +71,12 @@ def docopt_cmd(func):
 data = Database()
 
 class EventsTick(cmd.Cmd):
-    intro = "Create an event! Generate a ticket!"
+    intro = "Create an event and Generate a ticket!"
+    
     prompt = click.style("tickets>>", fg='green', bg='black', bold=True)
     
 
     # creating an event
-
     def do_event_create(self, args):
         try:
             name = input("Enter name of event: ")
@@ -131,7 +131,7 @@ class EventsTick(cmd.Cmd):
             new_start = input("New Start dd/mm/yyyy: ")
             new_end = input("New End dd/mm/yyyy: ")
 
-            # validation
+            # date validation
             start1 = time.strptime(new_start, "%d/%m/%Y")
             end1 = time.strptime(new_end, "%d/%m/%Y")
             now = datetime.datetime.now().strftime("%d/%m/%Y")
@@ -158,23 +158,22 @@ class EventsTick(cmd.Cmd):
 
     # generating ticket 
     def do_ticket_generate(self, *args):
-        # try:
-        email = input("Enter your email: ")
-        event_id = int(input("Enter the event: "))
-        
-        valid = True 
-        data.create_tickets(valid, email, event_id)
+        try:
+            email = input("Enter your email: ")
+            event_id = int(input("Enter the event: "))
+            
+            valid = True 
+            data.create_tickets(valid, email, event_id)
 
-        table = data.get_ticket(event_id)
-        
-        # if there is no email i run ticket_send.
-        if email == "":
-            return self.do_ticket_send()        
-        else: 
-            send_email(email, table)
-        # except:
-        #     print(colored("The event ID does not exist."))
-
+            table = data.get_ticket(event_id)
+            
+            # if there is no email i run ticket_send.
+            if email == "":
+                return self.do_ticket_send()        
+            else: 
+                send_email(email, table)
+        except:
+            print(colored("The event ID does not exist."))
 
 
 
@@ -186,11 +185,11 @@ class EventsTick(cmd.Cmd):
         data.get_event_tickets(int(arg['<event_id>']))
     
 
+    # invalidating a ticket
     @docopt_cmd
     def do_ticket_invalidate(self, arg):
         """Usage: ticket_invalidate <ticket_id>"""
         valid = False
-        # print(arg)
         data.invalidate(valid, int(arg['<ticket_id>']))
     
 
@@ -200,6 +199,7 @@ class EventsTick(cmd.Cmd):
         """Usage: quit"""
         exit()
     
+    # get the help table
     @docopt_cmd
     def do_h(self, args):
         """Usage: h"""
