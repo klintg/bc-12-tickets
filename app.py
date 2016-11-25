@@ -71,11 +71,11 @@ def docopt_cmd(func):
 data = Database()
 
 class EventsTick(cmd.Cmd):
+
     intro = "Create an event and Generate a ticket!"
     
     prompt = click.style("tickets>>", fg='green', bg='black', bold=True)
     
-
     # creating an event
     def do_event_create(self, args):
         try:
@@ -88,16 +88,14 @@ class EventsTick(cmd.Cmd):
             start1 = time.strptime(start, "%d/%m/%Y")
             end1 = time.strptime(end, "%d/%m/%Y")
             now = datetime.datetime.now().strftime("%d/%m/%Y")
-
-            if now > start and now > end:
-                print("You cannot input a past date")        
-            elif start1 > end1:
-                print("Your Start date can't be Greater than End date.")
+        
+            if start1 > end1:
+                print(colored("Your Start date can't be Greater than End date.", "red"))
             else:       
                 data.new_event(name, venue, start, end)
-
+                print(colored("Your event has been successfully entered", "green"))
         except:
-            print(colored("Please insert the correct format"))
+            print(colored("Please insert the correct format", "red"))
         
     
     # deleting an event
@@ -136,16 +134,15 @@ class EventsTick(cmd.Cmd):
             end1 = time.strptime(new_end, "%d/%m/%Y")
             now = datetime.datetime.now().strftime("%d/%m/%Y")
 
-            if now > new_start and now > new_end:
-                print("You cannot input a past date")        
-            elif start1 > end1:
+                   
+            if start1 > end1:
                 print("Your new date can't be Greater than End date.")
             else:
                 data.edit_data(eventid, new_name, new_venue, new_start, new_end)
 
         except:
             print(colored("Wrong format: cannot edit event"))
-
+            print(colored("Your event has been successfully edited", "green"))
 
 
     # sending tickets despite email input in ticket_generate    
@@ -160,7 +157,7 @@ class EventsTick(cmd.Cmd):
     def do_ticket_generate(self, *args):
         try:
             email = input("Enter your email: ")
-            event_id = int(input("Enter the event: "))
+            event_id = int(input("Enter the eventID: "))
             
             valid = True 
             data.create_tickets(valid, email, event_id)
