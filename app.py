@@ -31,12 +31,12 @@ import time
 from db import Database
 from docopt import docopt, DocoptExit
 from sendemail import send_email
-from datevalid import date_validate
+from sendemail import send_ticket
 from termcolor import colored
 from ui import menu_table
 
-# ui.introduction()
-# ui.starter()
+ui.introduction()
+ui.starter()
 
 
 # docopt decorator 
@@ -124,26 +124,27 @@ class EventsTick(cmd.Cmd):
     # editing an events
     def do_edit(self, args):
 
-        # try:
-        new_name = input("New Event: ")
-        new_venue = input("New Venue: ")        
-        eventid = input("Enter EventID To Update: ")
-        new_start = input("New Start dd/mm/yyyy: ")
-        new_end = input("New End dd/mm/yyyy: ")
+        try:
+            new_name = input("New Event: ")
+            new_venue = input("New Venue: ")        
+            eventid = input("Enter EventID To Update: ")
+            new_start = input("New Start dd/mm/yyyy: ")
+            new_end = input("New End dd/mm/yyyy: ")
 
-        # validation
-        # start1 = time.strptime(new_start, "%d/%m/%Y")
-        # end1 = time.strptime(new_end, "%d/%m/%Y")
-        # now = datetime.datetime.now().strftime("%d/%m/%Y")
+            # validation
+            start1 = time.strptime(new_start, "%d/%m/%Y")
+            end1 = time.strptime(new_end, "%d/%m/%Y")
+            now = datetime.datetime.now().strftime("%d/%m/%Y")
 
-        # if now > new_start and now > new_end:
-        #     print("You cannot input a past date")        
-        # elif start1 > end1:
-        #     print("Your new date can't be Greater than End date.")
-        # else:
-        data.edit_data(eventid, new_name, new_venue, new_start, new_end)
-        # except:
-        #     print(colored("Wrong format: cannot edit event"))
+            if now > new_start and now > new_end:
+                print("You cannot input a past date")        
+            elif start1 > end1:
+                print("Your new date can't be Greater than End date.")
+            else:
+                data.edit_data(eventid, new_name, new_venue, new_start, new_end)
+
+        except:
+            print(colored("Wrong format: cannot edit event"))
 
 
 
@@ -151,23 +152,28 @@ class EventsTick(cmd.Cmd):
     def do_ticket_send(self, *args):        
         # this should query for email and send the generated list.append
         email = input("Please provide the email: ")
-        print(data.get_last_ticket())
+        table = data.get_last_ticket()
+        send_ticket(email, table)
 
 
     # generating ticket 
     def do_ticket_generate(self, *args):
-        
+        # try:
         email = input("Enter your email: ")
         event_id = int(input("Enter the event: "))
         
         valid = True 
         data.create_tickets(valid, email, event_id)
 
+        table = data.get_ticket(event_id)
+        
         # if there is no email i run ticket_send.
         if email == "":
             return self.do_ticket_send()        
         else: 
-            send_email(email, event_id)
+            send_email(email, table)
+        # except:
+        #     print(colored("The event ID does not exist."))
 
 
 

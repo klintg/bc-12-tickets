@@ -63,26 +63,22 @@ class Database:
             x.add_row([row[0], row[1], row[2], row[3]])
         print(x)
 
-
-    def get_ticket(self, event_id):
-        
+    # info on the ticket
+    def get_ticket(self, event_id):        
         self.cursor.execute("SELECT * FROM events WHERE event_id = %d" % (event_id))
-        email_ticket = self.cursor.fetchone()
+        email_ticket = self.cursor.fetchall()
         for row in email_ticket:
-            print('{}, {}'.format(row[1], row[2]))
+            return [row[1], row[2]]        
+        
 
     # quering the last ticket to send to the email 
     def get_last_ticket(self, *args):
-        x = PrettyTable()
-        x.fields_names = ["Ticketid", "Valid", "Email", "Ticket_EventID"]
 
         self.cursor.execute("SELECT * FROM tickets ORDER BY ticket_id DESC LIMIT 1")
         last = self.cursor.fetchall()
         for row in last:
-            x.add_row([row[0], row[1], row[2], row[3]])
-        print(x)
-
-    
+            return [row[0], row[1]]
+            
 
     # invalidating a ticket.
     def invalidate(self, valid, tickid):
