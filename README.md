@@ -21,12 +21,14 @@ To start the application by run: `python app.py`
 
 | Commands          | description        
 | ----------------- |:------------------------------:|
-| event_create      | creates an event a |
-| event_list        | Lists all the events on the db  |
-| event_delete      | deletes an event in the db      | 
-| edit              | edits an event                  |
-| ticket_generate   | generates a ticket              |
-| exit              | exits the application           |
-| -h                | Docpt usage                     |
-| h                 | get the help table              |
+| event_create             | creates an event a |
+| event_list               | Lists all the events on the db  |
+| event_delete  eventid    | deletes an event in the db      | 
+| edit                     | edits an event                  |
+| ticket_generate eventid  | generates a ticket              |
+| event_view  id           | generates a ticket              |
+| ticket_generate          | generates a ticket              |
+| exit                     | exits the application           |
+| -h                       | Docpt usage                     |
+| h                        | get the help table              |
 
